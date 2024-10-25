@@ -44,6 +44,13 @@ public class CannonController : MonoBehaviour
         GameObject cookie = Instantiate(normalCookiePrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = cookie.GetComponent<Rigidbody>(); // Asegúrate de que las galletas tengan un Rigidbody
 
+        // Asignar el daño a la galleta
+        Cookie cookieScript = cookie.GetComponent<Cookie>();
+        if (cookieScript != null)
+        {
+            cookieScript.damage = normalCookieDamage; // Asigna el daño de la galleta normal
+        }
+
         if (rb != null)
         {
             rb.AddForce(firePoint.forward * cookieForce); // Aplica fuerza en la dirección del fuego
@@ -70,6 +77,13 @@ public class CannonController : MonoBehaviour
 
         GameObject bigCookie = Instantiate(bigCookiePrefab, firePoint.position, firePoint.rotation);
         Rigidbody bigRb = bigCookie.GetComponent<Rigidbody>(); // Asegúrate de que las galletas grandes tengan un Rigidbody
+
+        // Asignar el daño a la galleta grande
+        Cookie bigCookieScript = bigCookie.GetComponent<Cookie>();
+        if (bigCookieScript != null)
+        {
+            bigCookieScript.damage = bigCookieDamage; // Asigna el daño de la galleta grande
+        }
 
         if (bigRb != null)
         {

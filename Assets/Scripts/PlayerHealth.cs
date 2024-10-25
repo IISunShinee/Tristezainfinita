@@ -1,42 +1,43 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+public class Jugador : MonoBehaviour
 {
-    public float maxHealth = 100f;          // Salud máxima del jugador
-    public float currentHealth;              // Salud actual del jugador
-    public Slider healthBar;                 // Barra de salud UI
+    public int vidaMaxima = 100; // La vida máxima del jugador
+    public int vidaActual;       // La vida actual del jugador
+    public Slider barraDeVida;   // El slider que muestra la vida del jugador
 
     void Start()
     {
-        currentHealth = maxHealth;           // Inicializa la salud actual
-        UpdateHealthBar();                   // Actualiza la barra de salud al inicio
+        // Inicializamos la vida actual al máximo
+        vidaActual = vidaMaxima;
+
+        // Asegurarse de que la barra de vida está actualizada al inicio
+        ActualizarBarraDeVida();
     }
 
-    public void TakeDamage(float damage)
+    // Método para que el jugador reciba daño
+    public void TomarDaño(int cantidad)
     {
-        currentHealth -= damage;              // Resta el daño a la salud actual
-        if (currentHealth < 0)
+        vidaActual -= cantidad;
+        Debug.Log("Jugador recibió daño. Vida restante: " + vidaActual);
+
+        // Asegurarse de que la vida no baja de cero
+        vidaActual = Mathf.Clamp(vidaActual, 0, vidaMaxima);
+
+        // Actualizar la barra de vida
+        ActualizarBarraDeVida();
+
+        if (vidaActual <= 0)
         {
-            currentHealth = 0;                // Asegura que la salud no sea negativa
-            Die();                            // Llama al método de muerte si la salud es 0
-        }
-
-        UpdateHealthBar();                   // Actualiza la barra de salud después de recibir daño
-    }
-
-    void UpdateHealthBar()
-    {
-        if (healthBar != null)
-        {
-            healthBar.value = currentHealth / maxHealth; // Actualiza la barra de salud en UI
+            // Manejar la muerte del jugador
+            Debug.Log("El jugador ha muerto.");
         }
     }
 
-    void Die()
+    // Método para actualizar la barra de vida
+    private void ActualizarBarraDeVida()
     {
-        // Aquí puedes agregar la lógica para la muerte del jugador, como reiniciar el nivel, mostrar un menú de game over, etc.
-        Debug.Log("¡El jugador ha muerto!");
-        Destroy(gameObject); // Destruye el objeto del jugador (opcional)
+        barraDeVida.value = (float)vidaActual / vidaMaxima;
     }
 }
