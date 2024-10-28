@@ -13,6 +13,10 @@ public class CannonController : MonoBehaviour
     public float normalCookieFireRate = 0.5f; // Tiempo entre disparos de galleta normal
     public float cookieForce = 500f;        // Fuerza aplicada al disparar las galletas
 
+    public AudioClip normalCookieSound;     // Sonido al disparar galleta normal
+    public AudioClip bigCookieSound;         // Sonido al disparar galleta grande
+    private AudioSource audioSource;         // Fuente de audio
+
     private bool canShootBigCookie = true;  // Para controlar el delay del disparo de la galleta grande
     private bool canShootNormalCookie = true; // Para controlar el disparo normal
 
@@ -20,6 +24,8 @@ public class CannonController : MonoBehaviour
     {
         // Establecer la rotación inicial del cañón
         transform.rotation = Quaternion.Euler(0, -90, 0); // Rotación fija
+
+        audioSource = GetComponent<AudioSource>(); // Obtiene el componente AudioSource
     }
 
     void Update()
@@ -44,16 +50,15 @@ public class CannonController : MonoBehaviour
         GameObject cookie = Instantiate(normalCookiePrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = cookie.GetComponent<Rigidbody>(); // Asegúrate de que las galletas tengan un Rigidbody
 
-        // Asignar el daño a la galleta
-        Cookie cookieScript = cookie.GetComponent<Cookie>();
-        if (cookieScript != null)
-        {
-            cookieScript.damage = normalCookieDamage; // Asigna el daño de la galleta normal
-        }
-
         if (rb != null)
         {
             rb.AddForce(firePoint.forward * cookieForce); // Aplica fuerza en la dirección del fuego
+        }
+
+        // Reproduce el sonido de la galleta normal
+        if (audioSource != null && normalCookieSound != null)
+        {
+            audioSource.PlayOneShot(normalCookieSound);
         }
 
         Debug.Log("Disparada galleta normal con daño: " + normalCookieDamage);
@@ -78,16 +83,15 @@ public class CannonController : MonoBehaviour
         GameObject bigCookie = Instantiate(bigCookiePrefab, firePoint.position, firePoint.rotation);
         Rigidbody bigRb = bigCookie.GetComponent<Rigidbody>(); // Asegúrate de que las galletas grandes tengan un Rigidbody
 
-        // Asignar el daño a la galleta grande
-        Cookie bigCookieScript = bigCookie.GetComponent<Cookie>();
-        if (bigCookieScript != null)
-        {
-            bigCookieScript.damage = bigCookieDamage; // Asigna el daño de la galleta grande
-        }
-
         if (bigRb != null)
         {
             bigRb.AddForce(firePoint.forward * cookieForce); // Aplica fuerza en la dirección del fuego
+        }
+
+        // Reproduce el sonido de la galleta grande
+        if (audioSource != null && bigCookieSound != null)
+        {
+            audioSource.PlayOneShot(bigCookieSound);
         }
 
         Debug.Log("Disparada galleta grande con daño: " + bigCookieDamage);

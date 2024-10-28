@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class Jugador : MonoBehaviour
 {
-    public int vidaMaxima = 100; // La vida máxima del jugador
-    public int vidaActual;       // La vida actual del jugador
+    public float vidaMaxima = 100; // La vida máxima del jugador
+    public float vidaActual;       // La vida actual del jugador
     public Slider barraDeVida;   // El slider que muestra la vida del jugador
 
     void Start()
