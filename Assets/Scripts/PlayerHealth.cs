@@ -3,9 +3,10 @@ using UnityEngine.UI;
 
 public class Jugador : MonoBehaviour
 {
-    public float vidaMaxima = 100; // La vida máxima del jugador
-    public float vidaActual;       // La vida actual del jugador
-    public Slider barraDeVida;   // El slider que muestra la vida del jugador
+    public float vidaMaxima = 100f;  // La vida máxima del jugador
+    public float vidaActual;         // La vida actual del jugador
+    public Slider barraDeVida;       // El slider que muestra la vida del jugador
+    public PlayerDeath playerDeathScript; // Referencia al script PlayerDeath
 
     void Start()
     {
@@ -14,6 +15,12 @@ public class Jugador : MonoBehaviour
 
         // Asegurarse de que la barra de vida está actualizada al inicio
         ActualizarBarraDeVida();
+
+        // Busca el script PlayerDeath en la escena
+        if (playerDeathScript == null)
+        {
+            playerDeathScript = GameObject.Find("MUERTE").GetComponent<PlayerDeath>();
+        }
     }
 
     // Método para que el jugador reciba daño
@@ -28,16 +35,35 @@ public class Jugador : MonoBehaviour
         // Actualizar la barra de vida
         ActualizarBarraDeVida();
 
+        // Si la vida es 0 o menor, el jugador muere
         if (vidaActual <= 0)
         {
-            // Manejar la muerte del jugador
             Debug.Log("El jugador ha muerto.");
+
+            // Llamar al método para manejar la muerte del jugador
+            if (playerDeathScript != null)
+            {
+                playerDeathScript.MatarJugador();
+            }
         }
+    }
+
+    // Método para curar al jugador
+    public void CurarJugador(float cantidad)
+    {
+        vidaActual += cantidad;
+        Debug.Log("Jugador se curó. Vida actual: " + vidaActual);
+
+        // Asegurarse de que la vida no exceda la vida máxima
+        vidaActual = Mathf.Clamp(vidaActual, 0, vidaMaxima);
+
+        // Actualizar la barra de vida
+        ActualizarBarraDeVida();
     }
 
     // Método para actualizar la barra de vida
     private void ActualizarBarraDeVida()
     {
-        barraDeVida.value = (float)vidaActual / vidaMaxima;
+        barraDeVida.value = vidaActual / vidaMaxima;
     }
 }

@@ -7,21 +7,27 @@ public class Enemigo : MonoBehaviour
     private int vidaActual;
 
     // Variables para hacer daño al jugador
-    public int daño = 10;          // Daño que hace al jugador
+    public int daño = 10;          // Daño que hace el enemigo al jugador
     public float tiempoEntreGolpes = 2f; // Tiempo entre cada golpe (en segundos)
     private float proximoGolpe = 0f;     // El tiempo en el que el enemigo puede volver a hacer daño
 
-    // Referencia al Animator (si tiene animaciones)
-    private Animator animator;
+    // Variables para inflar el enemigo
+    public float hincharEscala = 1.2f; // Cuánto crece el enemigo al recibir daño
+    private Vector3 escalaOriginal; // Almacenará la escala original del enemigo
+
+    // Referencia al AudioSource y sonido de explosión
+    private AudioSource audioSource;
+    public AudioClip sonidoExplosion; // Sonido que se reproduce al morir
 
     // Start se llama antes del primer frame update
     void Start()
     {
         // Inicializamos la vida actual al máximo
         vidaActual = vidaMaxima;
+        escalaOriginal = transform.localScale; // Guardamos la escala original
 
-        // Referencia al Animator (opcional)
-        animator = GetComponent<Animator>();
+        // Referencia al AudioSource
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Método para que el enemigo reciba daño
@@ -29,6 +35,9 @@ public class Enemigo : MonoBehaviour
     {
         vidaActual -= cantidad;
         Debug.Log("Enemigo recibió daño. Vida restante: " + vidaActual);
+
+        // Hinchamos el sprite del enemigo
+        transform.localScale = escalaOriginal * hincharEscala;
 
         // Verificamos si la vida llegó a cero
         if (vidaActual <= 0)
@@ -42,14 +51,14 @@ public class Enemigo : MonoBehaviour
     {
         Debug.Log("Enemigo ha muerto.");
 
-        // Si tiene una animación de muerte, la reproducimos
-        if (animator != null)
+        // Reproducir el sonido de explosión
+        if (sonidoExplosion != null && audioSource != null)
         {
-            animator.SetTrigger("Muerte");
+            audioSource.PlayOneShot(sonidoExplosion);
         }
 
-        // Desactivar el objeto o destruirlo después de un tiempo
-        Destroy(gameObject, 2f); // Destruye el enemigo después de 2 segundos para dejar ver la animación de muerte
+        // Destruir el enemigo inmediatamente
+        Destroy(gameObject);
     }
 
     // Método para hacer daño al jugador con cooldown
@@ -70,3 +79,5 @@ public class Enemigo : MonoBehaviour
         }
     }
 }
+
+
