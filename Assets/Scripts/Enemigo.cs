@@ -1,33 +1,50 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemigo : MonoBehaviour
 {
-    // Variables de vida
-    public int vidaMaxima = 100;   // Vida máxima del enemigo
+    public int vidaMaxima = 100;
     private int vidaActual;
 
-    // Variables para hacer daño al jugador
-    public int daño = 10;          // Daño que hace el enemigo al jugador
-    public float tiempoEntreGolpes = 2f; // Tiempo entre cada golpe (en segundos)
-    private float proximoGolpe = 0f;     // El tiempo en el que el enemigo puede volver a hacer daño
+    public int daño = 10;
+    public float tiempoEntreGolpes = 2f;
+    private float proximoGolpe = 0f;
 
-    // Variables para inflar el enemigo
-    public float hincharEscala = 1.2f; // Cuánto crece el enemigo al recibir daño
-    private Vector3 escalaOriginal; // Almacenará la escala original del enemigo
-
-    // Referencia al AudioSource y sonido de explosión
+    public AudioClip sonidoPasos;   // Sonido que se reproduce cuando camina
+    public AudioClip sonidoMuerte;  // Sonido que se reproduce al morir
     private AudioSource audioSource;
-    public AudioClip sonidoExplosion; // Sonido que se reproduce al morir
+    private bool caminando = false;
 
-    // Start se llama antes del primer frame update
+    private Animator animator;
+
     void Start()
     {
-        // Inicializamos la vida actual al máximo
         vidaActual = vidaMaxima;
-        escalaOriginal = transform.localScale; // Guardamos la escala original
-
-        // Referencia al AudioSource
         audioSource = GetComponent<AudioSource>();
+        animator = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        // Simulación de caminar
+        if (EstaCaminando())  // Método para determinar si el enemigo está caminando
+        {
+            if (!caminando)
+            {
+                audioSource.clip = sonidoPasos;
+                audioSource.loop = true;  // Repetir sonido mientras camina
+                audioSource.Play();
+                caminando = true;
+            }
+        }
+        else
+        {
+            if (caminando)
+            {
+                audioSource.Stop();  // Detener sonido de pasos
+                caminando = false;
+            }
+        }
     }
 
     // Método para que el enemigo reciba daño
@@ -36,48 +53,33 @@ public class Enemigo : MonoBehaviour
         vidaActual -= cantidad;
         Debug.Log("Enemigo recibió daño. Vida restante: " + vidaActual);
 
-        // Hinchamos el sprite del enemigo
-        transform.localScale = escalaOriginal * hincharEscala;
-
-        // Verificamos si la vida llegó a cero
         if (vidaActual <= 0)
         {
             Morir();
         }
     }
 
-    // Método para manejar la muerte del enemigo
     private void Morir()
     {
         Debug.Log("Enemigo ha muerto.");
-
-        // Reproducir el sonido de explosión
-        if (sonidoExplosion != null && audioSource != null)
-        {
-            audioSource.PlayOneShot(sonidoExplosion);
-        }
-
-        // Destruir el enemigo inmediatamente
-        Destroy(gameObject);
+        audioSource.PlayOneShot(sonidoMuerte);  // Reproducir sonido de muerte
+        Destroy(gameObject, 2f);  // Destruir después de 2 segundos
     }
 
-    // Método para hacer daño al jugador con cooldown
+    private bool EstaCaminando()
+    {
+        return GetComponent<NavMeshAgent>().velocity.magnitude > 0.1f;
+    }
+
     private void OnTriggerStay(Collider other)
     {
-        // Comprobamos si el objeto con el que chocamos es el jugador
         if (other.CompareTag("Player"))
         {
-            // Si el tiempo actual es mayor al próximo golpe permitido
             if (Time.time >= proximoGolpe)
             {
-                // Hacer daño al jugador
                 other.GetComponent<Jugador>().TomarDaño(daño);
-
-                // Establecer el próximo tiempo en el que el enemigo puede hacer daño
                 proximoGolpe = Time.time + tiempoEntreGolpes;
             }
         }
     }
 }
-
-

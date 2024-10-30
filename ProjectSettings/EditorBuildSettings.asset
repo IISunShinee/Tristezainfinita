@@ -4,5 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: b039f0bcab0f3474c9f66ea6253a1ad4
+  - enabled: 1
+    path: Assets/Scenes/Pasteleria.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Cuevas.unity
+    guid: 43943e8da800ea04a924bc441dc8f2bc
+  - enabled: 1
+    path: Assets/Scenes/Muerte.unity
+    guid: 30b19b03342b27c4dab767e39dad870b
+  - enabled: 1
+    path: Assets/Scenes/Creditos.unity
+    guid: 16cae76ee375899488070fce2abb0aa6
   m_configObjects: {}
